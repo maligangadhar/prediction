@@ -1,0 +1,6 @@
+---
+aplications:
+ - name:sample
+   menory:512m
+   buildpack:staticfile_buildpack
+   instances:1

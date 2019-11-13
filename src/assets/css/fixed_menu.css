@@ -1,0 +1,87 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.fixedMenuInstance {
+  font: 13px/27px Arial, sans-serif;
+  color: #3366cc;
+  height: 30px;
+}
+
+.fixedMenuInstance a:hover {
+  text-decoration: underline;
+}
+
+.fixedMenuInstance a {
+  text-decoration: none;
+  padding: 7px 8px 7px 8px;
+  color: #3366cc;
+  outline: none;
+  border: 1px solid transparent;
+  line-height: normal;
+  line-height: initial;
+  font-size: 11px;
+}
+
+.fixedMenuInstance ul,
+#mainContent .fixedMenuInstance ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 10px;
+  z-index: 2;
+}
+
+.fixedMenuInstance ul li {
+  padding: 0;
+  float: left;
+  line-height: inherit;
+}
+
+.fixedMenuInstance ul li ul li {
+  padding: 0;
+  float: none;
+  margin: 0 0 0 0px;
+  width: 100%;
+}
+
+.fixedMenuInstance ul li ul,
+#mainContent .fixedMenuInstance ul li ul {
+  position: absolute;
+  border: 1px solid #c3d1ec;
+  border-top: 0;
+  margin-top: -1px;
+  display: none;
+  padding: 0px 16px 0px 0;
+  background-color: #f3f3f3;
+}
+
+.fixedMenuInstance .active ul {
+  display: block !important;
+}
+
+.fixedMenuInstance .active a {
+  background-color: #f3f3f3;
+  border: 1px solid #c3d1ec;
+  border-bottom: 0;
+  box-shadow: 0 -1px 5px #cccccc;
+  display: block;
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+}
+
+.fixedMenuInstance .active ul a {
+  box-shadow: 0 0 0 #cccccc;
+  border: 0;
+  width: 100%;
+  padding: 5px 8px 5px 8px;
+}
+
+.fixedMenuInstance .arrow {
+  border-color: #3366cc transparent transparent;
+  border-style: solid dashed dashed;
+  margin-left: 5px;
+  position: relative;
+  top: 10px;
+}

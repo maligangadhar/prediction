@@ -1,0 +1,199 @@
+<div *ngIf="msgs">
+  <p-messages
+    [showTransitionOptions]="'500ms'"
+    [hideTransitionOptions]="'1000ms'"
+    [(value)]="msgs"
+    [closable]="true"
+  >
+  </p-messages>
+</div>
+<div class="ui-fluid">
+  <div style="margin-top: 10px; padding-right: 50px">
+    <div class="row" style="margin:10px;">
+      <div class="col-xs-12" style="display: flex;margin-left:-8px;">
+        <input
+          type="file"
+          style="width: 98%"
+          accept=".csv"
+          class="upload-file-btn"
+          value="Select File"
+          ngf-max-size="20MB"
+          (change)="handleFileInput($event.target.files)"
+        />
+        <img *ngIf="isFileLoading" src="../../assets/images/spinner.gif" />
+        <span *ngIf="showSuccessIcon" style="color:green;margin-top:3px;">
+          <fa name="check-square" class="fa-lg"></fa>
+        </span>
+        <span *ngIf="showErrorIcon" style="color:red;margin-top:3px;">
+          <fa name="window-close" class="fa-lg"></fa>
+        </span>
+        <button
+          class="btn green-btn upload-button upload-new-file"
+          style="width:45%;"
+          [disabled]="!enablePredictionButton"
+          title="To initiate prediction"
+          (click)="predictDetails()"
+        >
+          <fa name="eye"> </fa> Predict
+        </button>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div>
+    <div *ngIf="predictionDetailsLoading" class="pubLoading">
+      <div class="loadingSpinner"></div>
+    </div>
+    <div *ngIf="!predictionDetailsLoading" style="height:100%">
+      <p-tabView [activeIndex]="tabIndex" (onChange)="handleChange($event)">
+        <p-tabPanel header="Input">
+          <p-table
+            #dt
+            [columns]="cols"
+            [value]="inputList"
+            [autoLayout]="true"
+            [responsive]="true"
+            [resizableColumns]="true"
+            [scrollable]="true"
+            [scrollHeight]="'calc(60vh - 200px)'"
+            [paginator]="true"
+            [showLoader]="true"
+            [rows]="100"
+          >
+            <ng-template pTemplate="caption">
+              <div class="row" *ngIf="predictionResultList?.length >= 1">
+                <div
+                  class="ui-helper-clearfix"
+                  style="float:left;width:20%;margin-top:5px;margin-left:5px;font-size: small;font-weight:500"
+                >
+                  Filter by : Prediction
+                </div>
+                <div class="ui-helper-clearfix" style="float:left;width:15%">
+                  <p-dropdown
+                    [options]="failureBucketList"
+                    [showClear]="true"
+                    [(ngModel)]="selectedMilesToFail"
+                    (onChange)="
+                      dtr.filter($event.value, 'PREDICTION_1', 'equals');
+                      dt.filter($event.value, 'PREDICTION_1', 'equals')
+                    "
+                  ></p-dropdown>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="colgroup" let-columns>
+              <colgroup>
+                <col
+                  *ngFor="let col of columns"
+                  [ngStyle]="{ display: col.display, width: col.width }"
+                />
+              </colgroup>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th
+                  *ngFor="let col of columns"
+                  pResizableColumn
+                  [pSortableColumn]="col.field"
+                  [ngStyle]="{ display: col.display }"
+                >
+                  {{ col.header }}
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+              <tr>
+                <td *ngFor="let col of columns" class="ui-resizable-column">
+                  {{ rowData[col.field] }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+        <p-tabPanel header="Prediction">
+          <p-table
+            #dtr
+            [columns]="resCols"
+            [value]="predictionResultList"
+            [autoLayout]="true"
+            [responsive]="true"
+            [resizableColumns]="true"
+            [scrollable]="true"
+            [scrollHeight]="'calc(60vh - 170px)'"
+            [paginator]="true"
+            [showLoader]="true"
+            [rows]="100"
+          >
+            <ng-template pTemplate="caption">
+              <div class="row" *ngIf="predictionResultList?.length >= 1">
+                <div
+                  class="ui-helper-clearfix"
+                  style="float:left;width:20%;margin-top:5px;margin-left:5px;font-size: small;font-weight:500"
+                >
+                  Filter by : Prediction
+                </div>
+                <div class="ui-helper-clearfix" style="float:left;width:15%">
+                  <p-dropdown
+                    [options]="failureBucketList"
+                    [showClear]="true"
+                    [(ngModel)]="selectedMilesToFail"
+                    (onChange)="
+                      dtr.filter($event.value, 'PREDICTION_1', 'equals');
+                      dt.filter($event.value, 'PREDICTION_1', 'equals')
+                    "
+                  ></p-dropdown>
+                </div>
+                <div class="ui-helper-clearfix" style="float:right;width:60%;">
+                  <button
+                    type="button"
+                    (click)="dtr.exportCSV()"
+                    [disabled]="predictionResultList?.length < 1"
+                    class="btn green-btn upload-button upload-new-file"
+                    style="float:right;font-weight:600;margin-right:5px;"
+                  >
+                    <fa name="download"></fa> Download
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="colgroup" let-columns>
+              <colgroup>
+                <col
+                  *ngFor="let col of columns"
+                  style="width:90px"
+                  [ngStyle]="{ display: col.display, width: col.width }"
+                />
+              </colgroup>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th
+                  *ngFor="let col of columns"
+                  pResizableColumn
+                  [pSortableColumn]="col.field"
+                  [ngStyle]="{ display: col.display }"
+                >
+                  {{ col.header }}
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+              <tr>
+                <td
+                  *ngFor="let col of columns"
+                  [ngStyle]="{ display: col.display }"
+                >
+                  <span *ngIf="col.display !== 'none'">
+                    {{ rowData[col.field] }}
+                  </span>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+</div>

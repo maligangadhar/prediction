@@ -1,0 +1,69 @@
+.upload-button-col {
+  padding-left: 0px;
+  padding-bottom: 10px;
+}
+
+.comments-label {
+  font-family: "Arial-BoldMT", "Arial Bold", "Arial";
+  font-weight: 700;
+  font-style: normal;
+  font-size: 13px;
+  text-align: right;
+  line-height: 17px;
+  padding-left: 25px;
+  padding-right: 0px;
+}
+
+.comments-container {
+  padding-right: 5%;
+}
+
+.comments-text-area {
+  height: 100px;
+  width: 100%;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  text-decoration: none;
+  color: #000000;
+}
+
+.comments-length {
+  position: absolute;
+  right: 25px;
+  bottom: 10px;
+}
+
+.edit-comments-length {
+  position: absolute;
+  right: 65px;
+  bottom: 10px;
+}
+.save-comment-col {
+  text-align: right;
+  padding-right: 4%;
+  margin-top: 8px;
+}
+
+.save-comment-btn {
+  width: 84px;
+}
+.upload-file-btn {
+  height: 20px;
+  background-color: transparent;
+  font-family: "Arial";
+  font-weight: 700;
+  font-style: normal;
+  font-size: 13px;
+  text-decoration: none;
+  color: #8a8a8a;
+}
+
+.version-text-area {
+  height: 20px;
+  width: 50%;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 11px;
+  color: #000000;
+}
