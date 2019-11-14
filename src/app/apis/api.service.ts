@@ -7,7 +7,6 @@ import { environment } from "../../environments/environment.prod";
 export class ApiService {
   apiBaseUrl: string = environment.BASE_API_URL;
   apiBaseUrl2: string = environment.BASE_API_URL2;
-  apiBaseUrl3: string = environment.BASE_API_URL3;
   constructor(private http: HttpClient) {}
 
   get<T>(url: string, params?: any): Observable<T> {
@@ -95,10 +94,10 @@ export class ApiService {
     const option: any = {};
     option.headers = headers;
     option.observe = "body";
-    return this.http.post<T>(this.apiBaseUrl3 + url, data, option);
+    return this.http.post<T>(this.apiBaseUrl2 + url, data, option);
   }
 
-  getPrediction2<T>(url: string) {
-    return this.http.get<T>(this.apiBaseUrl2 + url);
-  }
+  // getPrediction2<T>(url: string) {
+  //   return this.http.get<T>(this.apiBaseUrl3 + url);
+  // }
 }

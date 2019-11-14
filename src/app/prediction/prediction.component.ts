@@ -11,7 +11,6 @@ import { Message, SortEvent } from "primeng/components/common/api";
 export class predictionComponent implements OnInit {
   fileToUpload: File = null;
   showWarning: boolean = false;
-  isLoading: boolean = false;
   isFileLoading: boolean = false;
   errorMessage: string = "";
   isUploadView: boolean = false;
@@ -31,7 +30,7 @@ export class predictionComponent implements OnInit {
   failureBucketList: any[];
   inputListClone: any[];
   enablePredictionButton: boolean = false;
-  selectedMilesToFail: string = "";
+  selectedMilesToFail: string = null;
 
   constructor(private papa: Papa, private predictService: PredictService) {}
 
@@ -47,7 +46,9 @@ export class predictionComponent implements OnInit {
    * onload details
    */
   onloadData = () => {
+    // Input columns
     this.cols = [{ field: "index", header: "", width: "40px" }];
+
     // Result columns
     this.resCols = [
       { field: "index", header: "", width: "40px" },
@@ -61,7 +62,6 @@ export class predictionComponent implements OnInit {
         header: "PREDICTION_PROBABILITY (%)"
       }
     ];
-    this.getLatestPredictionDetails();
   };
 
   /**
@@ -104,9 +104,7 @@ export class predictionComponent implements OnInit {
           const results = this.papa.parse(csv as string, {
             header: true,
             skipEmptyLines: true,
-            complete: results => {
-              console.log(results.data);
-            }
+            complete: results => {}
           });
           if (
             results !== null &&
@@ -123,12 +121,12 @@ export class predictionComponent implements OnInit {
                 width:
                   column === "UNIT_MAKE_CODE" ||
                   column === "UNIT_MODEL_YEAR" ||
-                  column === "MILEAGE" ||
-                  column === "UNIT_ENGINE_EPA_YEAR"
+                  column === "MILEAGE"
                     ? "180px"
-                    : column === "FAULT_CODES"
-                    ? "200px"
-                    : "110px"
+                    : column === "FAULT_CODES" ||
+                      column === "UNIT_ENGINE_EPA_YEAR"
+                    ? "210px"
+                    : "150px"
               });
 
               // dummy column for export
@@ -161,7 +159,7 @@ export class predictionComponent implements OnInit {
               if (allTextLines.length <= 2001) {
                 this.fileToUpload = file;
                 this.isFileLoading = false;
-                this.uploadCSV();
+                this.uploadCSV(results);
               } else {
                 event.target.value = "";
                 this.msgs = [];
@@ -202,45 +200,60 @@ export class predictionComponent implements OnInit {
   /**
    * upload csv file for prediction
    */
-  uploadCSV = () => {
-    this.isLoading = true;
+  uploadCSV = results => {
     this.msgs = [];
-    this.predictService.uploadPredictFile(this.fileToUpload).subscribe(
-      response => {
-        if (response["error_data"].length < 1) {
-          this.inputList = response.data;
-          this.predictionResultList = [];
-          this.inputList.forEach((item, index) => {
-            item.index = index + 1;
-          });
-          this.msgs.push({
-            severity: "success",
-            summary: "Info Message",
-            detail: "Successfully uploaded CSV datails "
-          });
-          this.showSuccessIcon = true;
-          this.enablePredictionButton = true;
-          this.tabIndex = 0;
-        } else {
-          this.msgs = [];
-          this.showErrorIcon = true;
-          this.msgs.push({
-            severity: "error",
-            summary: "Error Message",
-            detail: "Please check these Errors:: " + response["error_data"]
-          });
-        }
-      },
-      error => {
-        this.msgs.push({
-          severity: "error",
-          summary: "Error Message: ",
-          detail: error
-        });
-        this.showErrorIcon = true;
-      }
-    );
-    this.isLoading = false;
+    this.predictionDetailsLoading = true;
+    this.inputList = results.data;
+    this.predictionResultList = [];
+    this.inputList.forEach((item, index) => {
+      item.index = index + 1;
+    });
+    this.msgs.push({
+      severity: "success",
+      summary: "Info Message",
+      detail: "Successfully uploaded CSV datails "
+    });
+    this.showSuccessIcon = true;
+    this.enablePredictionButton = true;
+    this.tabIndex = 0;
+    setTimeout(() => {
+      this.predictionDetailsLoading = false;
+    }, 50);
+    // this.predictService.uploadPredictFile(this.fileToUpload).subscribe(
+    //   response => {
+    //     if (response["error_data"].length < 1) {
+    //       this.inputList = response.data;
+    //       this.predictionResultList = [];
+    //       this.inputList.forEach((item, index) => {
+    //         item.index = index + 1;
+    //       });
+    //       this.msgs.push({
+    //         severity: "success",
+    //         summary: "Info Message",
+    //         detail: "Successfully uploaded CSV datails "
+    //       });
+    //       this.showSuccessIcon = true;
+    //       this.enablePredictionButton = true;
+    //       this.tabIndex = 0;
+    //     } else {
+    //       this.msgs = [];
+    //       this.showErrorIcon = true;
+    //       this.msgs.push({
+    //         severity: "error",
+    //         summary: "Error Message",
+    //         detail: "Please check these Errors:: " + response["error_data"]
+    //       });
+    //     }
+    //   },
+    //   error => {
+    //     this.msgs.push({
+    //       severity: "error",
+    //       summary: "Error Message: ",
+    //       detail: error
+    //     });
+    //     this.showErrorIcon = true;
+    //   }
+    // );
   };
   /**
    * disable upload button
@@ -255,40 +268,15 @@ export class predictionComponent implements OnInit {
   }
 
   /**
-   * get prediction details
-   */
-  getInputDetails = () => {
-    this.predictService.getPredictionDetails().subscribe(
-      (response: Array<any>) => {
-        this.inputList = response;
-        setTimeout(() => {
-          this.predictionDetailsLoading = false;
-        }, 3000);
-      },
-      error => {
-        this.msgs.push({
-          severity: "error",
-          summary: "Error Message",
-          detail: "Unable to get prediction details "
-        });
-        this.predictionDetailsLoading = false;
-      }
-    );
-  };
-
-  /**
    * get prediction result details
    */
   getPredResultDetails = () => {
     this.msgs = [];
-    let columns: Array<String> = [];
-    let colObj = {};
-    // this.predictService.uploadPredicResultFile(this.fileToUpload).subscribe(
-    this.predictService.getPredictionResultDetails().subscribe(
+    this.predictService.uploadPredicResultFile(this.fileToUpload).subscribe(
+      // this.predictService.getPredictionResultDetails().subscribe(
       (response: any) => {
         var responseJSON = JSON.parse(response);
         this.predictionResultList = responseJSON;
-        console.log(responseJSON);
         this.failureBucketList = [];
         this.failureBucketList.push({
           label: "All",
@@ -301,7 +289,7 @@ export class predictionComponent implements OnInit {
               value: item.PREDICTION_1
             });
             this.inputList.forEach(res => {
-              if (res.VIN === item.VIN) {
+              if (+res.VIN === item.VIN) {
                 res.PREDICTION_1 = item.PREDICTION_1;
               }
             });
@@ -319,6 +307,7 @@ export class predictionComponent implements OnInit {
             );
           }
         );
+        this.failureBucketList.sort((a, b) => (a.label > b.label ? 1 : -1));
         this.predictionDetailsLoading = false;
         this.tabIndex = 1;
         this.enablePredictionButton = false;
@@ -346,14 +335,20 @@ export class predictionComponent implements OnInit {
   handleChange(e) {
     this.tabIndex = e.index;
   }
-  /**
-   * hide upload view
-   */
-  hideUploadView() {
-    this.fileToUpload = null;
-    this.isUploadView = !this.isUploadView;
-  }
 
+  /**
+   * clear filter b4 download
+   * @param dt
+   * @param dtr
+   */
+  clearFilter(dt, dtr) {
+    dtr.filter(null, "PREDICTION_1", "equals");
+    dt.filter(null, "PREDICTION_1", "equals");
+    this.selectedMilesToFail = null;
+    setTimeout(() => {
+      dtr.exportCSV();
+    }, 500);
+  }
   /**
    * predict details ....
    */
@@ -362,17 +357,4 @@ export class predictionComponent implements OnInit {
     this.predictionDetailsLoading = true;
     this.getPredResultDetails();
   }
-
-  /**
-   * show latest prediction details
-   */
-  getLatestPredictionDetails = () => {
-    //this.showPredictView = true;
-    // this.getInputDetails();
-    // this.getPredResultDetails();
-    //this.predictionDetailsLoading = true;
-    // this.getUserIP(function(ip) {
-    //   localStorage.setItem("ip", ip);
-    // });
-  };
 }

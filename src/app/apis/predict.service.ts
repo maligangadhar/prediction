@@ -10,15 +10,7 @@ export class PredictService {
   constructor(private apiservice: ApiService) {}
 
   /**
-   * get prediction details
-   */
-  getPredictionDetails() {
-    const url = environment.predictResultListUrl;
-    return this.apiservice.get(url);
-  }
-
-  /**
-   * upload file
+   * upload file :: Deprecated not used any more
    * @param fileToUpload
    */
   uploadPredictFile(fileToUpload: File): Observable<any> {
@@ -26,7 +18,6 @@ export class PredictService {
     const formData: FormData = new FormData();
     formData.append("csvfile", fileToUpload, fileToUpload.name);
     return this.apiservice.uploadFile(endpoint, formData);
-    //return this.apiservice.get(environment.predictListUrl);
   }
 
   /**
@@ -41,10 +32,10 @@ export class PredictService {
   }
 
   /**
-   * get prediction result details
+   * get prediction result details :: Need to delete
    */
-  getPredictionResultDetails(): Observable<any> {
-    const endpoint = environment.predictResultListUrl;
-    return this.apiservice.getPrediction2(endpoint);
-  }
+  //   getPredictionResultDetails(): Observable<any> {
+  //     const endpoint = environment.predictResultListUrl;
+  //     return this.apiservice.getPrediction2(endpoint);
+  //   }
 }

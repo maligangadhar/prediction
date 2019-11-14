@@ -67,3 +67,28 @@
   font-size: 11px;
   color: #000000;
 }
+
+.filterBy {
+  float: left;
+  width: 20%;
+  margin-top: 5px;
+  margin-left: -10px;
+  font-size: small;
+}
+
+.downloadButton {
+  float: right;
+  font-weight: 600;
+  margin-right: 5px;
+  margin-top: 13px;
+  width: 130px;
+  height: 35px;
+  background-color: #2d73cf;
+}
+
+.predictBtn {
+  width: 200px;
+  height: 35px;
+  margin-left: 60px;
+  background-color: #2d73cf;
+}
