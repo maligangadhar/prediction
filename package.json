@@ -31,7 +31,7 @@
     "jquery": "^3.4.1",
     "moment": "^2.24.0",
     "ngx-papaparse": "^3.0.4",
-    "papaparse": "^5.1.0",
+    "papaparse": "^5.2.0",
     "primeicons": "^2.0.0",
     "primeng": "^8.0.3",
     "rxjs": "~6.4.0",
